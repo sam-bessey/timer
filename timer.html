@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>SamTimerPro</title>
+        <script>
+            function startTimer() {
+                // Ask for notifications
+                Notification.requestPermission();
+
+                let progress = document.getElementById("progress");
+                let circle = document.getElementById("circleProgress");
+                let hr = document.getElementById("hr");
+                let min = document.getElementById("min");
+                let sec = document.getElementById("sec");
+                let time =
+                    Number(hr.value) * 360 +
+                    Number(min.value) * 60 +
+                    Number(sec.value);
+                let body = document.getElementById("body");
+
+                // Rectangle
+                progress.style.transitionDuration = `${time}s`;
+                progress.style.width = "100%";
+
+                // Circle
+                circle.style.transitionDuration = `${time}s`;
+                circle.style.width = "200px";
+                circle.style.height = "200px";
+                circle.style.marginLeft = "0";
+                circle.style.marginTop = "0";
+
+                // Show stop button
+                hr.setAttribute("hidden", "true");
+                min.setAttribute("hidden", "true");
+                sec.setAttribute("hidden", "true");
+                document.getElementById("styleContainer").style.display =
+                    "none";
+                document.getElementById("start").setAttribute("hidden", "true");
+                document.getElementById("stop").removeAttribute("hidden");
+
+                setTimeout(() => {
+                    // Show notification
+                    let bodyText;
+                    if (min.value == "") {
+                        bodyText = `your ${sec.value} sec timer finished!`;
+                    } else if (hr.value == "") {
+                        bodyText = `your ${min.value} min ${sec.value} sec timer finished!`;
+                    } else {
+                        bodyText = `your ${hr.value} hr ${min.value} min ${sec.value} sec timer finished!`;
+                    }
+                    new Notification("Timer ended!", {
+                        body: bodyText,
+                    });
+
+                    // reset rectangle progress
+                    progress.style.transitionDuration = "0.2s";
+                    progress.style.width = 0;
+
+                    // reset circle progress
+                    circle.style.transitionDuration = "0.2s";
+                    circle.style.width = "0";
+                    circle.style.height = "0";
+                    circle.style.marginLeft = "100px";
+                    circle.style.marginTop = "100px";
+
+                    // reset inputs
+                    hr.value = "";
+                    min.value = "";
+                    sec.value = "";
+
+                    // Hide stop button
+                    hr.removeAttribute("hidden");
+                    min.removeAttribute("hidden");
+                    sec.removeAttribute("hidden");
+                    document.getElementById("styleContainer").style.display =
+                        "inline-flex";
+                    document.getElementById("start").removeAttribute("hidden");
+                    document
+                        .getElementById("stop")
+                        .setAttribute("hidden", "true");
+                }, time * 1000);
+            }
+
+            function updateLocalStorage() {
+                let visits = localStorage.getItem("visits");
+                let visitsP = document.getElementById("visits");
+                console.log("Visits", visits);
+
+                if (visits == null) {
+                    visitsP.innerText = "Welcome to SamTimer.";
+                    localStorage.setItem("visits", 1);
+                } else if (visits == 1) {
+                    visitsP.innerText =
+                        "This is your second time visiting SamTimer.";
+                    localStorage.setItem("visits", 2);
+                } else {
+                    visitsP.innerText = `You have visited this website ${visits} times before`;
+                    localStorage.setItem("visits", Number(visits) + 1);
+                }
+            }
+
+            function updateUI() {
+                let select = document.getElementById("styleSelect");
+                let rectangle = document.getElementById("rectangle");
+                let circle = document.getElementById("circle");
+
+                if (select.value == "rectangle") {
+                    rectangle.removeAttribute("hidden");
+                    circle.setAttribute("hidden", "true");
+                } else {
+                    rectangle.setAttribute("hidden", "true");
+                    circle.removeAttribute("hidden");
+                }
+            }
+
+            function updateUIColors() {
+                let body = document.getElementById("body");
+                let progress = document.getElementById("progress");
+                let circle = document.getElementById("circleProgress");
+                let hr = document.getElementById("hr");
+                let min = document.getElementById("min");
+                let sec = document.getElementById("sec");
+                let start = document.getElementById("start");
+
+                if (document.getElementById("colorSelect").value == "Red") {
+                    body.setAttribute("class", "bodyRed");
+                    progress.setAttribute("class", "progress progressRed");
+                    circle.setAttribute("class", "circleProgress progressRed");
+                    hr.setAttribute("class", "inputRed");
+                    min.setAttribute("class", "inputRed");
+                    sec.setAttribute("class", "inputRed");
+                    start.setAttribute("class", "startRed");
+                } else {
+                    body.removeAttribute("class");
+                    progress.setAttribute("class", "progress");
+                    circle.setAttribute("class", "circleProgress");
+                    hr.removeAttribute("class");
+                    min.removeAttribute("class");
+                    sec.removeAttribute("class");
+                    start.removeAttribute("class");
+                }
+            }
+
+            // Update local storage when website is loaded
+            document.addEventListener("DOMContentLoaded", function () {
+                updateLocalStorage();
+            });
+        </script>
+        <style>
+            body {
+                height: 100vh;
+                width: 100vw;
+                margin: 0;
+                padding: 0;
+            }
+
+            input {
+                padding: 15px;
+                border-radius: 10px;
+                border: 0;
+                transition-duration: 1s;
+                margin: 10px 0 10px 0;
+                height: 15px;
+                width: calc(((65% - 50px) / 3) - 20px);
+            }
+            input:hover {
+                border-radius: 60px;
+            }
+
+            button {
+                padding: 15px;
+                border-radius: 10px;
+                border: 0;
+                background-color: rgb(0, 52, 2);
+                color: white;
+                transition-duration: 1s;
+                width: calc(35% - 15px);
+            }
+            button:hover {
+                border-radius: 50px;
+            }
+            button:active {
+                background-color: rgba(0, 52, 2, 0.8);
+            }
+
+            select {
+                background-color: transparent;
+                border: 0;
+                transition: 0.2s;
+                border-radius: 999px;
+                padding: 5px;
+            }
+            select:hover {
+                background-color: rgba(0, 0, 0, 0.133);
+            }
+
+            .optionContainer {
+                display: inline-flex;
+                flex-direction: row;
+                width: 30vw;
+                height: 20px;
+                background-color: rgba(0, 0, 0, 0.21);
+                border-radius: 20px;
+                padding: 10px;
+                margin: 10px 0 20px calc((70vw - 20px) / 2);
+                box-shadow: 0 0 15px 5px rgba(0, 0, 0, 0.294);
+                align-items: center;
+                justify-content: space-around;
+            }
+            .rectangle {
+                width: 60vw;
+                height: 50px;
+                margin-left: calc((100vw - 60vw) / 2);
+            }
+            .progress {
+                width: 0;
+                margin: 0;
+                padding: 0;
+                height: 100%;
+            }
+            .circle {
+                width: 200px;
+                height: 200px;
+                border-radius: 100px;
+                margin-left: calc(50vw - 100px);
+                margin-top: 30px;
+            }
+            .circleProgress {
+                width: 0;
+                height: 0;
+                border-radius: 100px;
+                margin-left: 100px;
+                margin-top: 100px;
+            }
+
+            /* Dark theme */
+            @media (prefers-color-scheme: dark) {
+                body {
+                    background-image: linear-gradient(
+                        45deg,
+                        rgb(2, 52, 2),
+                        rgb(0, 0, 47)
+                    );
+                    color: white;
+                }
+                select {
+                    color: white;
+                }
+                .bodyRed {
+                    background-image: linear-gradient(
+                        45deg,
+                        rgb(52, 2, 2),
+                        rgb(47, 20, 0)
+                    );
+                }
+                .rectangle {
+                    border: 2px solid white;
+                }
+                .progress {
+                    background-image: linear-gradient(
+                        90deg,
+                        rgb(194, 250, 196),
+                        rgb(192, 199, 255)
+                    );
+                }
+                .circle {
+                    border: 2px solid white;
+                }
+                .circleProgress {
+                    background-image: linear-gradient(
+                        90deg,
+                        rgb(203, 255, 204),
+                        rgb(208, 214, 255)
+                    );
+                }
+                .stop {
+                    background-color: rgb(236, 160, 160);
+                }
+                .progressRed {
+                    background-image: linear-gradient(
+                        90deg,
+                        rgb(248, 183, 183),
+                        rgb(251, 219, 175)
+                    );
+                }
+                input {
+                    background-color: rgb(144, 155, 242);
+                    color: black;
+                }
+                input:focus {
+                    background-color: rgba(255, 255, 255, 0.844);
+                }
+                button {
+                    background-color: rgb(96, 174, 98);
+                    color: black;
+                }
+                .inputRed {
+                    background-color: rgb(254, 209, 209);
+                }
+                .startRed {
+                    background-color: rgb(248, 171, 123);
+                }
+            }
+
+            /* Styles for light theme (explicitly, if needed) */
+            @media (prefers-color-scheme: light) {
+                body {
+                    background-image: linear-gradient(
+                        45deg,
+                        rgb(211, 255, 211),
+                        rgb(189, 189, 255)
+                    );
+                    color: black;
+                }
+                .bodyRed {
+                    background-image: linear-gradient(
+                        45deg,
+                        rgb(255, 191, 191),
+                        rgb(253, 218, 192)
+                    );
+                }
+                input {
+                    color: black;
+                }
+                .rectangle {
+                    border: 2px solid black;
+                }
+                .progress {
+                    background-image: linear-gradient(
+                        90deg,
+                        rgb(0, 52, 2),
+                        rgb(0, 7, 63)
+                    );
+                }
+                .circle {
+                    border: 2px solid black;
+                }
+                .circleProgress {
+                    background-image: linear-gradient(
+                        90deg,
+                        rgb(0, 52, 2),
+                        rgb(0, 7, 63)
+                    );
+                }
+                .stop {
+                    background-color: rgb(56, 0, 0);
+                }
+                .progressRed {
+                    background-image: linear-gradient(
+                        90deg,
+                        rgb(91, 0, 0),
+                        rgb(90, 52, 0)
+                    );
+                }
+                input {
+                    background-color: rgb(0, 7, 63);
+                    color: white;
+                }
+                input:focus {
+                    background-color: rgba(0, 7, 63, 0.8);
+                }
+                .inputRed {
+                    background-color: rgb(63, 15, 0);
+                }
+                .startRed {
+                    background-color: rgb(95, 50, 5);
+                    color: white;
+                }
+            }
+        </style>
+    </head>
+    <body id="body">
+        <div
+            style="
+                width: 50vw;
+                height: 65px;
+                background-color: rgba(0, 0, 0, 0.21);
+                border-radius: 20px;
+                padding: 0;
+                margin: 40px 0 20px calc((100vw - 50vw) / 2);
+                box-shadow: 0 0 15px 5px rgba(0, 0, 0, 0.294);
+            "
+        >
+            <input id="hr" placeholder="hr" style="margin-left: 10px" />
+            <input id="min" placeholder="min" />
+            <input id="sec" placeholder="sec" />
+            <button id="start" onclick="startTimer()">Start Timer</button>
+            <button
+                id="stop"
+                onclick="window.location.reload()"
+                style="width: calc(100% - 20px); margin: 10px"
+                class="stop"
+                hidden
+            >
+                Stop Timer
+            </button>
+        </div>
+        <div class="optionContainer" id="styleContainer">
+            <p>Timer style:</p>
+            <select id="styleSelect" onchange="updateUI()">
+                <option>rectangle</option>
+                <option>circle</option>
+            </select>
+        </div>
+        <div id="themeContainer" class="optionContainer">
+            <p>Color theme:</p>
+            <select id="colorSelect" onchange="updateUIColors()">
+                <option>Blue</option>
+                <option>Red</option>
+            </select>
+        </div>
+        <div class="rectangle" id="rectangle">
+            <div id="progress" class="progress"></div>
+        </div>
+        <div class="circle" id="circle" hidden>
+            <div id="circleProgress" class="circleProgress"></div>
+        </div>
+        <p id="visits">Welcome to SamTimer</p>
+    </body>
+</html>
